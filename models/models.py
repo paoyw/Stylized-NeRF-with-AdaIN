@@ -111,7 +111,7 @@ class VGGEncoder(nn.Module):
         self.pretrained = pretrained
         if pretrained:
             features = torchvision.models.vgg19(
-                        weights=torchvision.models.VGG19_Weights
+                        weights=torchvision.models.VGG19_Weights.DEFAULT
                        ).features
         else:
             features = torchvision.models.vgg19().features
@@ -224,7 +224,7 @@ class AdaIN(nn.Module):
         norm_feats = s_stds * (c_feats - c_means) / c_stds + s_means
         return norm_feats
 
-class StlyeTransferAdaIN(nn.Module):
+class StyleTransferAdaIN(nn.Module):
     def __init__(self, pretrained=True):
         super().__init__()
         self.enc = VGGEncoder(pretrained=pretrained)
