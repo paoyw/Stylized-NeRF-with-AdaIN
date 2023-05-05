@@ -24,7 +24,7 @@ def denorm(imgs):
     std_t = torch.Tensor(
                 std, device=imgs.device
             ).view(3, *[1 for _ in range(len(imgs) - 1)])
-    return std_t * imgs + std_t
+    return std_t * imgs + mean_t
 
 def split_style_dataset(
     valid_ratio=0.1,

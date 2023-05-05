@@ -121,6 +121,7 @@ class VGGEncoder(nn.Module):
                         features[7:12],
                         features[12:21]
                       ])
+        self.freeze()
 
     def freeze(self):
         for block in self.blocks:
@@ -146,32 +147,32 @@ class VGGEncoder(nn.Module):
             return output[1:]
 
 class VGGDecoder(nn.Module):
-    def __init__(self, interpolate_mode='nearest'):
+    def __init__(self, interpolate_mode='bilinear'):
         super().__init__()
         self.interpolate_mode = interpolate_mode
         block1 = nn.Sequential(
             nn.Conv2d(512, 256, 3, 1, 1, padding_mode='reflect'),
-            nn.ReLU(),
+            nn.LeakyReLU(),
         )
         block2 = nn.Sequential(
             nn.Conv2d(256, 256, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(256, 256, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(256, 256, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(256, 128, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
         )
         block3 = nn.Sequential(
             nn.Conv2d(128, 128, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(128, 64, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
         )
         block4 = nn.Sequential(
             nn.Conv2d(64, 64, 3, 1, 1, padding_mode="reflect"),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(64, 3, 3, 1, 1, padding_mode="reflect"),
         )
         self.blocks = nn.ModuleList([block1, block2, block3, block4])
