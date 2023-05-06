@@ -152,27 +152,27 @@ class VGGDecoder(nn.Module):
         self.interpolate_mode = interpolate_mode
         block1 = nn.Sequential(
             nn.Conv2d(512, 256, 3, 1, 1, padding_mode='reflect'),
-            nn.LeakyReLU(),
+            nn.ReLU(),
         )
         block2 = nn.Sequential(
             nn.Conv2d(256, 256, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.Conv2d(256, 256, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.Conv2d(256, 256, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.Conv2d(256, 128, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
         )
         block3 = nn.Sequential(
             nn.Conv2d(128, 128, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.Conv2d(128, 64, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
         )
         block4 = nn.Sequential(
             nn.Conv2d(64, 64, 3, 1, 1, padding_mode="reflect"),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.Conv2d(64, 3, 3, 1, 1, padding_mode="reflect"),
         )
         self.blocks = nn.ModuleList([block1, block2, block3, block4])
@@ -196,17 +196,13 @@ class VGGDecoder(nn.Module):
         return output
 
 class AdaIN(nn.Module):
-    def __init__(self, eps=1e-12):
+    def __init__(self, eps=1e-8):
         super().__init__()
         self.eps = eps
     
-    def cal_mean_std(self, feats, infer=False):
+    def cal_mean_std(self, feats):
         assert(len(feats.shape) == 4)
-        if infer:
-            n = 1
-            c = 512
-        else:
-            n, c, _, _ = feats.shape
+        n, c, _, _ = feats.shape
         feats = feats.flatten(start_dim=2)
         means = torch.mean(feats, dim=-1).view(n, c, 1, 1)
         stds = torch.std(feats, dim=-1).view(n, c, 1, 1) + self.eps
@@ -232,7 +228,7 @@ class StyleTransferAdaIN(nn.Module):
         self.dec = VGGDecoder()
         self.adain = AdaIN()
 
-    def forward(self, c_images, s_images):
+    def forward(self, c_images, s_images, return_hidden=False):
         '''
         input:
             c_images: content images (N, C, H, W)
@@ -247,4 +243,7 @@ class StyleTransferAdaIN(nn.Module):
         s_feats = self.enc(s_images)
         norm_feats = self.adain(c_feats, s_feats)
         output_images = self.dec(norm_feats)
-        return c_feats, s_feats, norm_feats, output_images
+        if return_hidden:
+            return c_feats, s_feats, norm_feats, output_images
+        else:
+            return output_images
