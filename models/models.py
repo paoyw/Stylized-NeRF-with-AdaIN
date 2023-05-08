@@ -125,7 +125,8 @@ class VGGEncoder(nn.Module):
 
     def freeze(self):
         for block in self.blocks:
-            block.requires_grad = False
+            for param in block.parameters():
+                param.requires_grad = False
     
     def forward(self, x, return_last=True):
         '''

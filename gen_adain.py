@@ -22,7 +22,7 @@ def main(args):
     std = [0.229, 0.224, 0.225]
     tfm = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize((512, 512)),
+            transforms.Resize((1024, 1024), antialias=False),
             transforms.Normalize(mean=mean, std=std)
           ])
     content_img = Image.open(args.content_image).convert('RGB')
@@ -40,6 +40,7 @@ def main(args):
         t_feats = model.enc(trans_img) 
         rec_c_img = model.dec(c_feats)
         rec_s_img = model.dec(s_feats)
+
         trans_img = utils.dataloader.denorm(
                         trans_img.squeeze().to('cpu')
                     )

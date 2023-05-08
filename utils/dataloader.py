@@ -83,7 +83,6 @@ class StyleDataset(Dataset):
                     ).convert('RGB')
         style_img = self.tfm(style_img)
         return content_img, style_img, style_tag
-
         
     def __len__(self):
         return len(self.content_files)
