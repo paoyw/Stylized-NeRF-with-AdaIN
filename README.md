@@ -6,13 +6,17 @@
 
 ![AdaIN result 1](./img/flower1.jpg)
 
-![AdaIN result 1](./img/flower2.jpg)
+![AdaIN result 2](./img/flower2.jpg)
 
-![AdaIN result 1](./img/trex0.jpg)
+![AdaIN result 3](./img/trex0.jpg)
 
-![AdaIN result 1](./img/trex1.jpg)
+![AdaIN result 4](./img/trex1.jpg)
 
-![AdaIN result 1](./img/trex2.jpg)
+![AdaIN result 5](./img/trex2.jpg)
+
+![AdaIN result 6](./img/lego0.jpg)
+
+![AdaIN result 7](./img/lego1.jpg)
 
 ## Citation
 The original paper of AdaIN
