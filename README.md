@@ -14,9 +14,9 @@
 
 ![AdaIN result 5](./img/trex2.jpg)
 
-![AdaIN result 6](./img/lego0.jpg)
+![AdaIN result 6](./img/lego0.png)
 
-![AdaIN result 7](./img/lego1.jpg)
+![AdaIN result 7](./img/lego1.png)
 
 ## Citation
 The original paper of AdaIN
