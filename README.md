@@ -30,6 +30,8 @@
 
 # Directly Style Transfer by AdaIN on NeRF
 
+![AdaIN on NeRF result 1](./img/lego-EnCampoGris.gif)
+
 ![AdaIN on NeRF result 0](./img/ship-FlowerFishAndFruit.gif)
 
 ## Citation
