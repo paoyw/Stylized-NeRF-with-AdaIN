@@ -1,6 +1,6 @@
 # Stylize NeRF with AdaIN 
 
-## pre-trained AdaIN results
+## AdaIN results
 
 ![AdaIN result 0](./img/flower0.jpg)
 
@@ -24,11 +24,11 @@
 
 ![AdaIN result 10](./img/drums2.png)
 
-# pre-trained NeRF results
+# NeRF results
 
 ![NeRF result 0](./img/flower_test_spiral_200000_rgb.gif)
 
-# AdaIN on NeRF
+# Directly Style Transfer by AdaIN on NeRF
 
 ![AdaIN on NeRF result 0](./img/ship-FlowerFishAndFruit.gif)
 
