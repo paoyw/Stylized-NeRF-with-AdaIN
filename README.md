@@ -18,6 +18,12 @@
 
 ![AdaIN result 7](./img/lego1.png)
 
+![AdaIN result 8](./img/drums0.png)
+
+![AdaIN result 9](./img/drums1.png)
+
+![AdaIN result 10](./img/drums2.png)
+
 # pre-trained NeRF results
 
 ![NeRF result 0](./img/flower_test_spiral_200000_rgb.gif)
