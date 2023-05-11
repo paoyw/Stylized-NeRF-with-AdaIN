@@ -18,6 +18,10 @@
 
 ![AdaIN result 7](./img/lego1.png)
 
+# pre-trained NeRF results
+
+![NeRF result 0](./img/flower_test_spiral_200000_rgb.gif)
+
 ## Citation
 The original paper of AdaIN
 ```

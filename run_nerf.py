@@ -148,7 +148,7 @@ def render_path(render_poses, hwf, K, chunk, render_kwargs, gt_imgs=None, savedi
     disps = []
 
     t = time.time()
-    for i, c2w in enumerate(tqdm(render_poses)):
+    for i, c2w in enumerate(tqdm(render_poses, ncols=80)):
         print(i, time.time() - t)
         t = time.time()
         rgb, disp, acc, _ = render(H, W, K, chunk=chunk, c2w=c2w[:3,:4], **render_kwargs)
