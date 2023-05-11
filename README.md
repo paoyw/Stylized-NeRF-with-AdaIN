@@ -1,4 +1,4 @@
-# MultiStylizeNeRF
+# Stylize NeRF with AdaIN 
 
 ## pre-trained AdaIN results
 
