@@ -59,8 +59,8 @@ def main(args):
                     style_img.squeeze().to('cpu'),
                 ),
                 trans_img,
-                rec_c_img,
-                rec_s_img,
+                # rec_c_img,
+                # rec_s_img,
             ],
             dim=2
          )

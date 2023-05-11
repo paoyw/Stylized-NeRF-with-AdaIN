@@ -21,6 +21,7 @@ def parse_args():
 
     # Data
     parser.add_argument('--content_dir', type=str, default='data/train2014/')
+    parser.add_argument('--style_config', type=str, default='config.json')
     parser.add_argument('--style_dir', type=str, default='data/style/')
     
     # Device
@@ -67,6 +68,7 @@ def main(args):
     trainset, valset = utils.dataloader.split_style_dataset(
                         valid_ratio=args.valid_ratio,
                         content_dir=args.content_dir,
+                        style_config=args.style_config,
                         style_dir=args.style_dir,
                        )
     train_loader = torch.utils.data.DataLoader(
@@ -200,9 +202,9 @@ def main(args):
             }
             logs.append(log)
             train_c_loss = []
-            trian_s_loss = []
+            train_s_loss = []
             train_rec_c_loss = []
-            trian_rec_s_loss = []
+            train_rec_s_loss = []
             with open(args.log_file, 'w') as f:
                 f.write(json.dumps(logs, indent=2))
             pbar.write(str(log))

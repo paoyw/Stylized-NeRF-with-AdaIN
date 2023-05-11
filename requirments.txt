@@ -3,3 +3,9 @@ torch
 torchvision
 scikit-learn
 tqdm
+imageio
+imageio-ffmpeg
+matplotlib
+configargparse
+tensorboard>=2.0
+opencv-python
