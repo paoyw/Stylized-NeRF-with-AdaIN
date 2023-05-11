@@ -28,6 +28,10 @@
 
 ![NeRF result 0](./img/flower_test_spiral_200000_rgb.gif)
 
+# AdaIN on NeRF
+
+![AdaIN on NeRF result 0](./img/ship-FlowerFishAndFruit.gif)
+
 ## Citation
 The original paper of AdaIN
 ```
