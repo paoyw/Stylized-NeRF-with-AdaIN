@@ -20,8 +20,6 @@ def parse_args():
     parser.add_argument('--device', type=str, default='cpu')
     return parser.parse_args()
 
-
-
 def main(args):
     os.makedirs(args.out_dir, exist_ok=args.overwrite)
 
@@ -52,15 +50,15 @@ def main(args):
         os.path.join(args.out_dir, 'style.jpg'),
     )
 
-    def style_transfer_dir(pos):
+    def style_transfer_dir(sfx):
         os.makedirs(
-            os.path.join(args.out_dir, pos),
+            os.path.join(args.out_dir, sfx),
             exist_ok=args.overwrite
         )
         with open(
                 os.path.join(
                     args.blender_dir,
-                    f'transforms_{pos}.json'
+                    f'transforms_{sfx}.json'
                 ),
                 'r'
              )  as f:
@@ -68,7 +66,7 @@ def main(args):
         with open(
                 os.path.join(
                     args.out_dir,
-                    f'transforms_{pos}.json',
+                    f'transforms_{sfx}.json',
                 ),
                 'w'
              ) as f:
@@ -90,7 +88,6 @@ def main(args):
     style_transfer_dir('train')
     style_transfer_dir('val')
     style_transfer_dir('test')
-
 
 if __name__ == '__main__':
     args = parse_args()

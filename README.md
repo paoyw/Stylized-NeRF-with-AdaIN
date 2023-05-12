@@ -30,9 +30,13 @@
 
 # Directly Style Transfer by AdaIN on NeRF
 
-![AdaIN on NeRF result 1](./img/lego-EnCampoGris.gif)
+![AdaIN on NeRF result 0](./img/lego-EnCampoGris.gif)
 
-![AdaIN on NeRF result 0](./img/ship-FlowerFishAndFruit.gif)
+![AdaIN on NeRF result 1](./img/ship-FlowerFishAndFruit.gif)
+
+# Train NeRF on Sylized Transfered Images by AdaIN
+
+![NeRF on AdaIN result 0](./img/blender_paper_lego-EnCampoGris_spiral_150000_rgb.gif)
 
 ## Citation
 The original paper of AdaIN
