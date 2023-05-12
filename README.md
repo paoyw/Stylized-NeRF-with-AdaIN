@@ -34,7 +34,7 @@
 
 ![AdaIN on NeRF result 1](./img/ship-FlowerFishAndFruit.gif)
 
-# Train NeRF on Sylized Transfered Images by AdaIN
+# Train NeRF on Style-Transfered Images by AdaIN
 
 ![NeRF on AdaIN result 0](./img/blender_paper_lego-EnCampoGris_spiral_150000_rgb.gif)
 
