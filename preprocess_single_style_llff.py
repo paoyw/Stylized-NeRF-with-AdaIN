@@ -57,6 +57,13 @@ def main(args):
         o_dir = os.path.join(args.llff_dir, direct)
         t_dir = os.path.join(args.out_dir, direct)
         fnames = os.listdir(o_dir)
+        fnames = [
+            fname for fname in fnames \
+            if fname.endswith('jpg') \
+                or  fname.endswith('JPG') \
+                or  fname.endswith('png') \
+                or fname.endswith('PNG')
+        ]
         for fname in tqdm(fnames, ncols=50):
             o_fname = os.path.join(o_dir, fname)
             t_fname = os.path.join(t_dir, fname)
@@ -64,12 +71,16 @@ def main(args):
             c_img = o_tfm(c_img).unsqueeze(dim=0).to(args.device)
             c_sz = [c_img.size(-2), c_img.size(-1)]
             if c_sz[0] / c_sz[1] > s_sz[0] / s_sz[1]:
-                scale_factor=np.ceil(c_sz[0] / s_sz[0])
+                scale_factor = c_sz[0] / s_sz[0]
             else:
-                scale_factor=np.ceil(c_sz[1] / s_sz[1])
+                scale_factor = c_sz[1] / s_sz[1]
+            scale_size = [
+                int(np.ceil(scale_factor * s_sz[0])),
+                int(np.ceil(scale_factor * s_sz[1]))
+            ]
             s_img_tfm = F.interpolate(
                             s_img,
-                            scale_factor=scale_factor,
+                            size=scale_size,
                             mode='bilinear',
                         )
             s_img_tfm =  transforms.functional.center_crop(
@@ -80,10 +91,11 @@ def main(args):
             t_img = utils.dataloader.denorm(t_img.squeeze().to('cpu'))
             save_image(t_img, t_fname)
 
-    img_directs = ['images', 'images_4', 'images_8']
-    img_directs = ['images']
-    for direct in img_directs:
-        style_transfer_dir(direct)
+    # img_directs = ['images', 'images_4', 'images_8']
+    img_directs = ['images_4', 'images_8']
+    with torch.no_grad():
+        for direct in img_directs:
+            style_transfer_dir(direct)
 
 if __name__ == '__main__':
     args = parser_args()

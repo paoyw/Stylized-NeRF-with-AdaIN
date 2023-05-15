@@ -85,9 +85,10 @@ def main(args):
             t_img = model(c_img, s_img, return_hidden=False)
             t_img = utils.dataloader.denorm(t_img.squeeze().to('cpu'))
             save_image(t_img, s_fname)
-    style_transfer_dir('train')
-    style_transfer_dir('val')
-    style_transfer_dir('test')
+    with torch.no_grad():
+        style_transfer_dir('train')
+        style_transfer_dir('val')
+        style_transfer_dir('test')
 
 if __name__ == '__main__':
     args = parse_args()
