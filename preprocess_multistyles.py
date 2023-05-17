@@ -16,6 +16,7 @@ def parse_args():
     parser.add_argument('--dataset_type', type=str)
     parser.add_argument('--content_dir', type=str)
     parser.add_argument('--style_imgs', type=str, nargs='+')
+    parser.add_argument('--alphas', type=float, nargs='+')
     parser.add_argument('--model', type=str)
     parser.add_argument('--device', type=str, default='cpu')
     return parser.parse_args()
@@ -31,12 +32,13 @@ def main(args):
 
     if args.dataset_type == 'blender':
         subargs.blender_dir =  args.content_dir
-        for style_img in args.style_imgs:
+        for style_img, alpha in zip(args.style_imgs, args.alphas):
             style_name = style_img.split('/')[-1].split('.')[0]
             subargs.out_dir = os.path.join(
                 args.out_dir, style_name
             )
             subargs.style_img = style_img
+            subargs.alpha = alpha
             preprocess_single_style_blender.main(subargs)
             style_configs.append(
                 {
@@ -47,12 +49,13 @@ def main(args):
             )
     elif args.dataset_type == 'llff':
         subargs.llff_dir =  args.content_dir
-        for style_img in args.style_imgs:
+        for style_img, alpha in zip(args.style_imgs, args.alphas):
             style_name = style_img.split('/')[-1].split('.')[0]
             subargs.out_dir = os.path.join(
                 args.out_dir, style_name
             )
             subargs.style_img = style_img
+            subargs.alpha = alpha
             preprocess_single_style_llff.main(subargs)
             style_configs.append(
                 {

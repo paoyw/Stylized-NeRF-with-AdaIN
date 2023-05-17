@@ -18,6 +18,7 @@ def parser_args():
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--llff_dir', type=str)
     parser.add_argument('--style_img', type=str)
+    parser.add_argument('--alpha', type=float, default=1)
     parser.add_argument('--model', type=str)
     parser.add_argument('--device', type=str, default='cpu')
     return parser.parse_args()
@@ -50,10 +51,11 @@ def main(args):
         ),
         os.path.join(args.out_dir, 'style.jpg'),
     )
-    
+
     os.system(f'cp -r {args.llff_dir}/* {args.out_dir}')
 
     def style_transfer_dir(direct):
+        save_style_feats = False    
         o_dir = os.path.join(args.llff_dir, direct)
         t_dir = os.path.join(args.out_dir, direct)
         fnames = os.listdir(o_dir)
@@ -87,7 +89,20 @@ def main(args):
                             s_img_tfm,
                             output_size=c_sz,
                          )
-            t_img = model(c_img, s_img_tfm, return_hidden=False)
+            if save_style_feats:
+                t_img = model(c_img, s_img_tfm, return_hidden=False, alpha=args.alpha)
+            else:
+                _, s_feats, _, t_img = model(
+                    c_img, s_img_tfm, return_hidden=True, alpha=args.alpha
+                )
+                s_means, s_stds = model.adain.cal_mean_std(s_feats)
+                s_style = torch.concat([
+                    s_means.flatten(), s_stds.flatten()
+                ])
+                np.save(
+                    os.path.join(t_dir, 'style.npy'),
+                    s_style.cpu().numpy(),
+                )
             t_img = utils.dataloader.denorm(t_img.squeeze().to('cpu'))
             save_image(t_img, t_fname)
 

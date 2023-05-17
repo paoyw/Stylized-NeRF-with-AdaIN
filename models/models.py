@@ -109,7 +109,7 @@ class AdaIN(nn.Module):
         stds = torch.std(feats, dim=-1).view(n, c, 1, 1) + self.eps
         return means, stds
     
-    def forward(self, c_feats, s_feats):
+    def forward(self, c_feats, s_feats, alpha=1):
         '''
         input:
             c_feats: content features (N, C, H, W)
@@ -119,6 +119,8 @@ class AdaIN(nn.Module):
         '''
         c_means, c_stds = self.cal_mean_std(c_feats)
         s_means, s_stds = self.cal_mean_std(s_feats)
+        s_means = alpha * s_means +  (1 - alpha) * c_means
+        s_stds = alpha * s_stds +  (1 - alpha) * c_stds
         norm_feats = s_stds * (c_feats - c_means) / c_stds + s_means
         return norm_feats
 
@@ -129,7 +131,7 @@ class StyleTransferAdaIN(nn.Module):
         self.dec = VGGDecoder()
         self.adain = AdaIN()
 
-    def forward(self, c_images, s_images, return_hidden=False):
+    def forward(self, c_images, s_images, alpha=1, return_hidden=False):
         '''
         input:
             c_images: content images (N, C, H, W)
@@ -142,7 +144,7 @@ class StyleTransferAdaIN(nn.Module):
         '''
         c_feats = self.enc(c_images)
         s_feats = self.enc(s_images)
-        norm_feats = self.adain(c_feats, s_feats)
+        norm_feats = self.adain(c_feats, s_feats, alpha=alpha)
         output_images = self.dec(norm_feats)
         if return_hidden:
             return c_feats, s_feats, norm_feats, output_images

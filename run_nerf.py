@@ -148,8 +148,8 @@ def render_path(render_poses, hwf, K, chunk, render_kwargs, gt_imgs=None, savedi
     disps = []
 
     t = time.time()
-    for i, c2w in enumerate(tqdm(render_poses, ncols=80)):
-        print(i, time.time() - t)
+    for i, c2w in enumerate(tqdm(render_poses, ncols=40)):
+        # print(i, time.time() - t)
         t = time.time()
         rgb, disp, acc, _ = render(H, W, K, chunk=chunk, c2w=c2w[:3,:4], **render_kwargs)
         rgbs.append(rgb.cpu().numpy())
@@ -708,7 +708,7 @@ def train():
     # writer = SummaryWriter(os.path.join(basedir, 'summaries', expname))
     
     start = start + 1
-    for i in trange(start, N_iters, ncols=80):
+    for i in trange(start, N_iters, ncols=40):
         time0 = time.time()
 
         # Sample random ray batch
