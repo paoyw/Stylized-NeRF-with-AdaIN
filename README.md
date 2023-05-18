@@ -38,9 +38,7 @@
 
 ![NeRF on AdaIN result 0](./img/blender_paper_lego-EnCampoGris_spiral_150000_rgb.gif)
 
-![NeRF on AdaIN result 1](./img/flower_test_spiral_200000_rgb.gif)
-
-![NeRF on AdaIN result 2](./img/ship-FlowerFishandFruit-apng.png)
+![NeRF on AdaIN result 1](./img/ship-FlowerFishandFruit-apng.png)
 
 ## Citation
 The original paper of AdaIN
