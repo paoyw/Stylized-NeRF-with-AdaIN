@@ -40,6 +40,8 @@
 
 ![NeRF on AdaIN result 1](./img/ship-FlowerFishandFruit-apng.png)
 
+![NeRF on AdaIN result 2](./img/trex_test-Bacchante_spiral_200000_rgb.png)
+
 ## Citation
 The original paper of AdaIN
 ```
