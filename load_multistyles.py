@@ -29,7 +29,7 @@ def load_blender_data(basedir, half_res=False, testskip=1):
         val_split_stk.append(val_split + accum_bs)
         test_split_stk.append(test_split + accum_bs)
 
-        bs = imgs.shape[0]
+        bs = images.shape[0]
         accum_bs += bs
         styles = np.load(os.path.join(meta['out_dir'], 'style.npy'))
         styles = np.stack([styles for _ in range(bs)])
@@ -38,7 +38,7 @@ def load_blender_data(basedir, half_res=False, testskip=1):
     poses_stk = np.concatenate(poses_stk, axis=0)
     render_poses_stk = np.concatenate(render_poses_stk, axis=0)
     styles_stk = np.concatenate(styles_stk, axis=0)
-    return imgs_stk, poses_stk, render_poses_stk, styles_stk, [H, W, focal], [train_split_stk, val_split_stk, test_split_stk]
+    return images_stk, poses_stk, render_poses_stk, styles_stk, [H, W, focal], [train_split_stk, val_split_stk, test_split_stk]
 
 def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=False, path_zflat=False):
     with open(os.path.join(basedir, 'config.json'), 'r') as f:
@@ -93,4 +93,5 @@ def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=Fal
     styles_stk = np.concatenate(styles_stk, axis=0)
     i_test_stk = np.array(i_test_stk,)
 
-    return images_stk, poses_stk, bds_stk, styles_stk, i_test_stk
+    return images_stk, poses_stk, bds_stk, render_poses_stk, styles_stk, i_test_stk
+    
