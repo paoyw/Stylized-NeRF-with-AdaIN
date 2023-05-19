@@ -52,6 +52,22 @@ class MultistylesNeRF(nn.Module):
                 nn.ReLU(),
                 nn.Linear(512, W)
             )
+        self.freeze()
+
+    def freeze(self,):
+        for param in self.pts_linears.parameters():
+            param.requires_grad = False
+
+        for param in self.views_linears.parameters():
+            param.requires_grad = False
+
+        if self.use_viewdirs:
+            for param in self.feature_linear.parameters():
+                param.requires_grad = False
+
+        if not self.use_style_density:
+            for param in self.alpha_linear.parameters():
+                param.requires_grad = False
 
     def load_pretrained(self, nerf, freeze=True):
         self.pts_linears.load_state_dict(
@@ -142,7 +158,8 @@ def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path)
         output_ch=output_ch,
         skips=skips,
         input_ch_views=input_ch_views,
-        use_viewdirs=args.use_viewdirs
+        use_viewdirs=args.use_viewdirs,
+        use_style_density=args.use_style_density,
     )
     style_network_fn.load_pretrained(network_fn)
     network_fine = run_nerf_helpers.NeRF(
@@ -162,7 +179,8 @@ def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path)
         output_ch=output_ch,
         skips=skips,
         input_ch_views=input_ch_views,
-        use_viewdirs=args.use_viewdirs
+        use_viewdirs=args.use_viewdirs,
+        use_style_density=args.use_style_density,
     )
     style_network_fine.load_pretrained(network_fine)
     return style_network_fn, style_network_fine

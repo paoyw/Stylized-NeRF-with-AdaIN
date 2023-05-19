@@ -52,7 +52,9 @@ def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=Fal
     accum_bs = 0
 
     styles_stk = []
-    for meta in metas: 
+    styles_indices_stk = []
+    poses_styles_indices_stk = []
+    for styles_index, meta in enumerate(metas): 
         images, poses, bds, render_poses, i_test = load_llff.load_llff_data(
             meta['out_dir'],
             factor=factor,
@@ -85,13 +87,20 @@ def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=Fal
                     )
         styles = np.stack([style for _ in range(bs)])
         styles_stk.append(styles)
+        styles_indices_stk.append(
+            np.array([styles_index for _ in range(bs)])
+        )
+        poses_styles_indices_stk.append(
+            np.array([styles_index for _ in range(render_poses.shape[0])])
+        )
 
     images_stk = np.concatenate(images_stk, axis=0)
     poses_stk = np.concatenate(poses_stk, axis=0)
     bds_stk = np.concatenate(bds_stk, axis=0)
     render_poses_stk = np.concatenate(render_poses_stk, axis=0)
     styles_stk = np.concatenate(styles_stk, axis=0)
+    styles_indices_stk = np.concatenate(styles_indices_stk, axis=0)
+    poses_styles_indices_stk = np.concatenate(poses_styles_indices_stk, axis=0)
     i_test_stk = np.array(i_test_stk,)
 
-    return images_stk, poses_stk, bds_stk, render_poses_stk, styles_stk, i_test_stk
-    
+    return images_stk, poses_stk, bds_stk, render_poses_stk, styles_stk, styles_indices_stk, poses_styles_indices_stk, i_test_stk
