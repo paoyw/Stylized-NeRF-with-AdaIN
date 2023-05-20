@@ -484,6 +484,8 @@ def config_parser():
                         help='layers in fine network')
     parser.add_argument("--netwidth_fine", type=int, default=256, 
                         help='channels per layer in fine network')
+    parser.add_argument("--steps", type=int, default=200000, 
+                        help='total steps')
     parser.add_argument("--N_rand", type=int, default=32*32*4, 
                         help='batch size (number of random rays per gradient step)')
     parser.add_argument("--lrate", type=float, default=5e-4, 
@@ -739,7 +741,7 @@ def train():
     if use_batching:
         rays_rgb = torch.Tensor(rays_rgb).to(device)
 
-    N_iters = 200000 + 1
+    N_iters = args.steps + 1
     print('Begin')
     print('TRAIN views are', i_train)
     print('TEST views are', i_test)
