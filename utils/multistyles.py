@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import run_nerf_helpers
 
 class MultistylesNeRF(nn.Module):
-    def __init__(self, D=8, W=256, input_ch=3, input_ch_views=3, output_ch=4, skips=[4], use_viewdirs=False, use_style_density=False, freeze=True):
+    def __init__(self, D=8, W=256, input_ch=3, input_ch_views=3, output_ch=4, skips=[4], use_viewdirs=False, use_style_density=False, style_density_D=0, style_rgb_D=0, freeze=True):
         super().__init__()
         self.D = D
         self.W = W
@@ -23,17 +23,23 @@ class MultistylesNeRF(nn.Module):
         if use_viewdirs:
             self.feature_linear = nn.Linear(W, W)
             if use_style_density:
+                layers = [nn.Linear(W+W, W), nn.ReLU()]
+                for _ in range(style_density_D):
+                    layers.append(nn.Linear(W, W))
+                    layers.append(nn.ReLU())
+                layers.append(nn.Linear(W, 1))
                 self.alpha_linear = nn.Sequential(
-                    nn.Linear(W+W, W),
-                    nn.ReLU(),
-                    nn.Linear(W, 1)
-                 )
+                    *layers
+                )
             else:
                 self.alpha_linear = nn.Linear(W, 1)
+            layers = [nn.Linear(W, W//2), nn.ReLU()]
+            for _ in range(style_rgb_D):
+                layers.append(nn.Linear(W//2, W//2))
+                layers.append(nn.ReLU())
+            layers.append(nn.Linear(W//2, 3))
             self.rgb_linear = nn.Sequential(
-                nn.Linear(W, W//2),
-                nn.ReLU(),
-                nn.Linear(W//2, 3),
+                *layers
             )
         else:
             self.output_linear = nn.Linear(W+W//2, output_ch)
@@ -150,6 +156,8 @@ def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path)
         skips=skips,
         input_ch_views=input_ch_views,
         use_viewdirs=args.use_viewdirs
+        style_rgb_D=args.style_rgb_D,
+        style_density_D=args.style_density_D,
     )
     style_network_fn = MultistylesNeRF(
         D=args.netdepth,
@@ -161,8 +169,10 @@ def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path)
         use_viewdirs=args.use_viewdirs,
         use_style_density=args.use_style_density,
         freeze=args.freeze,
+        style_rgb_D=args.style_rgb_D,
+        style_density_D=args.style_density_D,
     )
-    if path == None:
+    if path != None:
         nerf_save = torch.load(path, map_location='cpu')
         network_fn = run_nerf_helpers.NeRF(
             D=args.netdepth,

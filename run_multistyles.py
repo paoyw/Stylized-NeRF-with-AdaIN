@@ -517,6 +517,8 @@ def config_parser():
                         help='use full 5D input instead of 3D')
     parser.add_argument("--use_style_density", action='store_true', 
                         help='use train new density for new styles')
+    parser.add_argument("--style_rgb_D", type=int, defaut=0, help='Depth for rgb MLP after concated')
+    parser.add_argument("--style_density_D", type=int, defaut=0, help='Depth for alpha MLP after concated')
     parser.add_argument("--i_embed", type=int, default=0, 
                         help='set 0 for default positional encoding, -1 for none')
     parser.add_argument("--multires", type=int, default=10, 
