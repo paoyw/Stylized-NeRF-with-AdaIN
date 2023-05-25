@@ -155,7 +155,7 @@ def render_path(render_poses, hwf, styles, K, chunk, render_kwargs, gt_imgs=None
     disps = []
 
     t = time.time()
-    for i, (c2w, style) in tqdm(enumerate(zip(render_poses, styles)), ncols=60):
+    for i, (c2w, style) in tqdm(list(enumerate(zip(render_poses, styles))), ncols=60):
         # print(i, time.time() - t)
         t = time.time()
         
@@ -494,6 +494,8 @@ def config_parser():
                         help='exponential learning rate decay (in 1000 steps)')
     parser.add_argument("--chunk", type=int, default=1024*32, 
                         help='number of rays processed in parallel, decrease if running out of memory')
+    parser.add_argument("--video_chunk", type=int, default=1024*32, 
+                        help='number of rays processed in parallel while generate vidoe, decrease if running out of memory')
     parser.add_argument("--netchunk", type=int, default=1024*64, 
                         help='number of pts sent through network in parallel, decrease if running out of memory')
     parser.add_argument("--no_batching", action='store_true', 
@@ -510,6 +512,7 @@ def config_parser():
                         help='number of additional fine samples per ray')
     parser.add_argument("--perturb", type=float, default=1.,
                         help='set to 0. for no jitter, 1. for jitter')
+    parser.add_argument('--freeze', action='store_false', help='freeze pre-trained layers')
     parser.add_argument("--use_viewdirs", action='store_true', 
                         help='use full 5D input instead of 3D')
     parser.add_argument("--use_style_density", action='store_true', 
@@ -857,6 +860,7 @@ def train():
 
         if i%args.i_video==0 and i > 0:
             # Turn on testing mode
+            print('Generate Video')
             with torch.no_grad():
                 rgbs, disps = render_path(
                     render_poses,
@@ -867,7 +871,7 @@ def train():
                         ]
                     ),
                     K,
-                    args.chunk,
+                    args.video_chunk,
                     render_kwargs_test
                 )
             print('Done, saving', rgbs.shape, disps.shape)
@@ -896,7 +900,7 @@ def train():
                         ]
                     ),
                     K,
-                    args.chunk,
+                    args.video_chunk,
                     render_kwargs_test,
                     gt_imgs=images[i_test],
                     savedir=testsavedir

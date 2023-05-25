@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import run_nerf_helpers
 
 class MultistylesNeRF(nn.Module):
-    def __init__(self, D=8, W=256, input_ch=3, input_ch_views=3, output_ch=4, skips=[4], use_viewdirs=False, use_style_density=False):
+    def __init__(self, D=8, W=256, input_ch=3, input_ch_views=3, output_ch=4, skips=[4], use_viewdirs=False, use_style_density=False, freeze=True):
         super().__init__()
         self.D = D
         self.W = W
@@ -13,7 +13,8 @@ class MultistylesNeRF(nn.Module):
         self.skips = skips
         self.use_viewdirs = use_viewdirs
         self.use_style_density = use_style_density
-        
+        self.freeze_pretrained = freeze
+
         self.pts_linears = nn.ModuleList(
             [nn.Linear(input_ch, W)] + [nn.Linear(W, W) if i not in self.skips else nn.Linear(W + input_ch, W) for i in range(D-1)])
         
@@ -52,7 +53,8 @@ class MultistylesNeRF(nn.Module):
                 nn.ReLU(),
                 nn.Linear(512, W)
             )
-        self.freeze()
+        if freeze:
+            self.freeze()
 
     def freeze(self,):
         for param in self.pts_linears.parameters():
@@ -140,7 +142,6 @@ class MultistylesNeRF(nn.Module):
         return outputs
 
 def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path):
-    nerf_save = torch.load(path, map_location='cpu')
     network_fn = run_nerf_helpers.NeRF(
         D=args.netdepth,
         W=args.netwidth,
@@ -150,7 +151,6 @@ def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path)
         input_ch_views=input_ch_views,
         use_viewdirs=args.use_viewdirs
     )
-    network_fn.load_state_dict(nerf_save['network_fn_state_dict'])
     style_network_fn = MultistylesNeRF(
         D=args.netdepth,
         W=args.netwidth,
@@ -160,27 +160,30 @@ def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path)
         input_ch_views=input_ch_views,
         use_viewdirs=args.use_viewdirs,
         use_style_density=args.use_style_density,
+        freeze=args.freeze,
     )
-    style_network_fn.load_pretrained(network_fn)
-    network_fine = run_nerf_helpers.NeRF(
-        D=args.netdepth,
-        W=args.netwidth,
-        input_ch=input_ch,
-        output_ch=output_ch,
-        skips=skips,
-        input_ch_views=input_ch_views,
-        use_viewdirs=args.use_viewdirs
-    )
-    network_fine.load_state_dict(nerf_save['network_fine_state_dict'])
-    style_network_fine = MultistylesNeRF(
-        D=args.netdepth,
-        W=args.netwidth,
-        input_ch=input_ch,
-        output_ch=output_ch,
-        skips=skips,
-        input_ch_views=input_ch_views,
-        use_viewdirs=args.use_viewdirs,
-        use_style_density=args.use_style_density,
-    )
-    style_network_fine.load_pretrained(network_fine)
+    if path == None:
+        nerf_save = torch.load(path, map_location='cpu')
+        network_fn = run_nerf_helpers.NeRF(
+            D=args.netdepth,
+            W=args.netwidth,
+            input_ch=input_ch,
+            output_ch=output_ch,
+            skips=skips,
+            input_ch_views=input_ch_views,
+            use_viewdirs=args.use_viewdirs
+        )
+        network_fn.load_state_dict(nerf_save['network_fn_state_dict'])
+        style_network_fn.load_pretrained(network_fn, args.freeze)
+        network_fine = run_nerf_helpers.NeRF(
+            D=args.netdepth,
+            W=args.netwidth,
+            input_ch=input_ch,
+            output_ch=output_ch,
+            skips=skips,
+            input_ch_views=input_ch_views,
+            use_viewdirs=args.use_viewdirs
+        )
+        network_fine.load_state_dict(nerf_save['network_fine_state_dict'])
+        style_network_fine.load_pretrained(network_fine, args.freeze)
     return style_network_fn, style_network_fine
