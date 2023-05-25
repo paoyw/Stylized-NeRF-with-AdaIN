@@ -14,6 +14,8 @@ class MultistylesNeRF(nn.Module):
         self.use_viewdirs = use_viewdirs
         self.use_style_density = use_style_density
         self.freeze_pretrained = freeze
+        self.style_density_D = style_density_D
+        self.style_rgb_D = style_rgb_D
 
         self.pts_linears = nn.ModuleList(
             [nn.Linear(input_ch, W)] + [nn.Linear(W, W) if i not in self.skips else nn.Linear(W + input_ch, W) for i in range(D-1)])
@@ -148,18 +150,20 @@ class MultistylesNeRF(nn.Module):
         return outputs
 
 def nerf2multistylesnerf(args, input_ch, output_ch, skips, input_ch_views, path):
-    network_fn = run_nerf_helpers.NeRF(
+    style_network_fn = MultistylesNeRF(
         D=args.netdepth,
         W=args.netwidth,
         input_ch=input_ch,
         output_ch=output_ch,
         skips=skips,
         input_ch_views=input_ch_views,
-        use_viewdirs=args.use_viewdirs
+        use_viewdirs=args.use_viewdirs,
+        use_style_density=args.use_style_density,
+        freeze=args.freeze,
         style_rgb_D=args.style_rgb_D,
         style_density_D=args.style_density_D,
     )
-    style_network_fn = MultistylesNeRF(
+    style_network_fine = MultistylesNeRF(
         D=args.netdepth,
         W=args.netwidth,
         input_ch=input_ch,
