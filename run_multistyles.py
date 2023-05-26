@@ -702,7 +702,7 @@ def train():
             render_poses = render_poses[:N]
             
             styles_set = F.interpolate( styles_set.permute(1, 0).unsqueeze(dim=0), [N], mode = "linear" )
-            styles_interpolated = styles_set.squeeze().permute(1, 0).numpy()
+            styles_interpolated = styles_set.squeeze().permute(1, 0).cpu().numpy()
             
             rgbs, disps = render_path(
                 render_poses,
@@ -722,7 +722,6 @@ def train():
         imageio.mimwrite( os.path.join(testsavedir, 'disp.mp4'), to8b(disps / np.max(disps)), fps=30, quality=8)
         
         return
-
     # Prepare raybatch tensor if batching random rays
     N_rand = args.N_rand
     use_batching = not args.no_batching
