@@ -690,26 +690,38 @@ def train():
     # Short circuit if only rendering out from trained model
     if args.render_only:
         print('RENDER ONLY')
+        
+        print('Generate Video')
         with torch.no_grad():
-            if args.render_test:
-                # render_test switches to test poses
-                # 把測試的圖片抽出來？
-                images = images[i_test]
-            else:
-                # Default is smoother render_poses path
-                # 沒有圖片？
-                images = None
-
-            testsavedir = os.path.join(basedir, expname, 'renderonly_{}_{:06d}'.format('test' if args.render_test else 'path', start))
-            os.makedirs(testsavedir, exist_ok=True)
-            print('test poses shape', render_poses.shape)
-
-            # 根據 rander 的位子角度、style 產生很多個 圖片(rgb)
-            rgbs, _ = render_path(render_poses, hwf, styles, K, args.chunk, render_kwargs_test, gt_imgs=images, savedir=testsavedir, render_factor=args.render_factor)
-            print('Done rendering', testsavedir)
-            imageio.mimwrite(os.path.join(testsavedir, 'video.mp4'), to8b(rgbs), fps=30, quality=8)
-
-            return
+            # Turn on testing mode
+            styles_set = np.unique(poses_styles_indices)
+            styles_set = [ styles_dict[poses_styles_index] for poses_styles_index in styles_set ]
+            styles_set = torch.Tensor(styles_set)
+            
+            N = len(render_poses) // len(styles_set)
+            render_poses = render_poses[:N]
+            
+            styles_set = F.interpolate( styles_set.permute(1, 0).unsqueeze(dim=0), [N], mode = "linear" )
+            styles_interpolated = styles_set.squeeze().permute(1, 0).numpy()
+            
+            rgbs, disps = render_path(
+                render_poses,
+                hwf,
+                styles_interpolated,
+                K,
+                args.video_chunk,
+                render_kwargs_test
+            )
+        
+        print('Done, saving', rgbs.shape, disps.shape)
+        
+        testsavedir = os.path.join(basedir, expname, 'renderonly_{}_{:06d}'.format('test' if args.render_test else 'path', start))
+        os.makedirs(testsavedir, exist_ok=True)
+        moviebase = os.path.join(basedir, expname, '{}_spiral_{:06d}_'.format(expname, i))
+        imageio.mimwrite(os.path.join(testsavedir, 'rgb.mp4'), to8b(rgbs), fps=30, quality=8)
+        imageio.mimwrite( os.path.join(testsavedir, 'disp.mp4'), to8b(disps / np.max(disps)), fps=30, quality=8)
+        
+        return
 
     # Prepare raybatch tensor if batching random rays
     N_rand = args.N_rand
