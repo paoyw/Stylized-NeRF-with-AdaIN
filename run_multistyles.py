@@ -717,7 +717,7 @@ def train():
         
         testsavedir = os.path.join(basedir, expname, 'renderonly_{}_{:06d}'.format('test' if args.render_test else 'path', start))
         os.makedirs(testsavedir, exist_ok=True)
-        moviebase = os.path.join(basedir, expname, '{}_spiral_{:06d}_'.format(expname, i))
+        # moviebase = os.path.join(basedir, expname, '{}_spiral_{:06d}_'.format(expname, i))
         imageio.mimwrite(os.path.join(testsavedir, 'rgb.mp4'), to8b(rgbs), fps=30, quality=8)
         imageio.mimwrite( os.path.join(testsavedir, 'disp.mp4'), to8b(disps / np.max(disps)), fps=30, quality=8)
         
