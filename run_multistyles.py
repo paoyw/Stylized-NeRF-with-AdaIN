@@ -46,6 +46,7 @@ def run_network(inputs, styles, viewdirs, fn, embed_fn, embeddirs_fn, netchunk=1
         embedded_dirs = embeddirs_fn(input_dirs_flat)
         embedded = torch.cat([embedded, embedded_dirs], -1)
 
+    # exit(0)
     outputs_flat = batchify(fn, netchunk)(embedded, styles_flat)
     outputs = torch.reshape(outputs_flat, list(inputs.shape[:-1]) + [outputs_flat.shape[-1]])
     return outputs
@@ -694,15 +695,35 @@ def train():
         print('Generate Video')
         with torch.no_grad():
             # Turn on testing mode
+            render_mode = "radius" # "time"
             styles_set = np.unique(poses_styles_indices)
             styles_set = [ styles_dict[poses_styles_index] for poses_styles_index in styles_set ]
-            styles_set = torch.Tensor(styles_set)
             
             N = len(render_poses) // len(styles_set)
             render_poses = render_poses[:N]
+
+            if render_mode != "radius":
+                tmp = [styles_set[0]]
+                for style in styles_set:
+                    tmp.append(style)
+                    tmp.append(style)
+                styles_set = torch.Tensor(tmp + styles_set[:1])
+                styles_set = F.interpolate( styles_set.permute(1, 0).unsqueeze(dim=0), [ N ], align_corners=True, mode = "linear" )
+                styles_interpolated = styles_set.squeeze().permute(1, 0).cpu().numpy()
+            else:
+                styleA, styleB = styles_set[:2]
+                styles_set = []
+                camera_dirs = []
+                for c2w in render_poses:
+                    rays_o, rays_d = get_rays(H, W, K, c2w)
+                    rays_d = torch.mean(rays_d, (0, 1)).cpu().numpy()
+                    camera_dirs.append( rays_d / np.linalg.norm(rays_d) )
             
-            styles_set = F.interpolate( styles_set.permute(1, 0).unsqueeze(dim=0), [N], mode = "linear" )
-            styles_interpolated = styles_set.squeeze().permute(1, 0).cpu().numpy()
+                angle = np.dot( camera_dirs[0], np.array(camera_dirs).transpose() )
+                for c_dir in angle:
+                    weight = (c_dir - min(angle)) / (max(angle) - min(angle))
+                    styles_set.append(styleA * (1-weight) + styleB * weight)
+                styles_interpolated = np.array(styles_set)
             
             rgbs, disps = render_path(
                 render_poses,
@@ -719,15 +740,19 @@ def train():
         os.makedirs(testsavedir, exist_ok=True)
         # moviebase = os.path.join(basedir, expname, '{}_spiral_{:06d}_'.format(expname, i))
         imageio.mimwrite(os.path.join(testsavedir, 'rgb.mp4'), to8b(rgbs), fps=30, quality=8)
-        imageio.mimwrite( os.path.join(testsavedir, 'disp.mp4'), to8b(disps / np.max(disps)), fps=30, quality=8)
-        
+        disps = (disps - np.mean(disps)) / np.std(disps)
+        z = np.zeros(disps.shape + (3,))
+        z[..., 0] += np.where(disps > 0, disps, 0)
+        z[..., 2] += np.where(disps < 0, -disps, 0)
+        disps = z
+        imageio.mimwrite( os.path.join(testsavedir, 'disp.mp4'), to8b(disps), fps=30, quality=8) 
         return
+
     # Prepare raybatch tensor if batching random rays
     N_rand = args.N_rand
     use_batching = not args.no_batching
     if use_batching:
         # For random ray batching
-        print('get rays')
         rays = np.stack([get_rays_np(H, W, K, p) for p in poses[:,:3,:4]], 0) # [N, ro+rd, H, W, 3]
         print('done, concats')
         rays_rgb = np.concatenate([rays, images[:,None]], 1) # [N, ro+rd+rgb, H, W, 3]
