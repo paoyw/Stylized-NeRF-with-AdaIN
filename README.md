@@ -46,7 +46,7 @@
 
 ## Introduction and More Results
 
-![Stylize NeRF with AdaIN](https://docs.google.com/presentation/d/e/2PACX-1vS8BNl5ONMOmT4AqOY0WVw8T3ZR-cLWvtVA3hgSiAsTg46B0YKnTGRVgDEp_IZHtNNeEHC_VDWimkUv/pub?start=false&loop=false&delayms=3000)
+[Stylize NeRF with AdaIN](https://docs.google.com/presentation/d/e/2PACX-1vS8BNl5ONMOmT4AqOY0WVw8T3ZR-cLWvtVA3hgSiAsTg46B0YKnTGRVgDEp_IZHtNNeEHC_VDWimkUv/pub?start=false&loop=false&delayms=3000)
 
 
 ## Citation
