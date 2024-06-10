@@ -1,5 +1,7 @@
 # Stylize NeRF with AdaIN 
 
+[![arXiv](https://img.shields.io/badge/arXiv-2406.04960-b31b1b.svg)](https://arxiv.org/abs/2406.04960)
+
 ## AdaIN results
 
 ![AdaIN result 0](./img/flower0.jpg)
