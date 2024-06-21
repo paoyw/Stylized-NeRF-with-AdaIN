@@ -4,6 +4,15 @@
 
 [![slide](https://img.shields.io/badge/google%20slide-introduction-ffba00.svg)](https://docs.google.com/presentation/d/e/2PACX-1vS8BNl5ONMOmT4AqOY0WVw8T3ZR-cLWvtVA3hgSiAsTg46B0YKnTGRVgDEp_IZHtNNeEHC_VDWimkUv/pub?start=false&loop=false&delayms=3000)
 
+## Visual results
+![Multi-NeRF flower 0](./img/multi-flower1.gif)
+
+![Multi-NeRF flower 1](./img/multi-flower2.png)
+
+![Multi-NeRF room](./img/multi-room.png)
+
+![MultiNeRF leave](./img/multi-leaves.png)
+
 ## AdaIN results
 
 ![AdaIN result 0](./img/flower0.jpg)
