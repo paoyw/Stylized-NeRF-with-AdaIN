@@ -13,6 +13,10 @@
 
 ![MultiNeRF leave](./img/multi-leaves.png)
 
+![Interpolate dinosaur](./img/interpolate-dinosaur.gif)
+
+![Interpolate horn](./img/interpolate-horn.png)
+
 ## AdaIN results
 
 ![AdaIN result 0](./img/flower0.jpg)
